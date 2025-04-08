@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SU 建模 - 墨咖工作室</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      header {
+        background-color: rgba(255, 255, 255, 0.3);
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        border-bottom: 2px solid #ccc;
+        margin-bottom: 20px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1;
+        transition: opacity 0.3s ease;
+        opacity: 1;
+      }
+
+      header.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      header img {
+        height: 45px;
+        margin-right: 5px;
+      }
+
+      header h1 {
+        color: black;
+        margin: 15px;
+      }
+
+      #address-place {
+        flex: 1;
+        text-align: right;
+      }
+
+      .module {
+        background-color: black;
+        color: white;
+        display: inline-block;
+        padding: 3px 30px;
+        margin-right: 40px;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .first-module {
+        margin-left: 50px;
+      }
+
+      .module:hover {
+        background-color: #333;
+        transform: scale(1.1);
+      }
+
+      main {
+        padding: 20px;
+        position: relative;
+        z-index: 1;
+        color: white;
+        margin-top: 80px;
+      }
+
+      /* 鼠标拖尾线条样式 */
+      .trail {
+        position: absolute;
+        height: 2px;
+        width: 20px;
+        pointer-events: none;
+        animation: fadeOut 0.5s ease-out forwards;
+      }
+
+      @keyframes fadeOut {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+        }
+      }
+
+      /* 视频背景样式 */
+      #background-video {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: -1;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- 视频背景 -->
+    <video id="background-video" autoplay loop muted>
+      <!-- 请替换为你自己的视频文件 -->
+      <source src="SU室内背景动画.mp4" type="video/mp4" />
+      你的浏览器不支持视频播放。
+    </video>
+    <header id="header">
+      <img src="moka.jpg" alt="图片" style="height: 30px; margin-right: 10px" />
+      <h1>墨咖工作室</h1>
+      <div class="module first-module">
+        <a href="123.html" style="color: white; text-decoration: none">首页</a>
+      </div>
+    </header>
+    <main>
+      <h2>SU 建模服务</h2>
+      <p>
+        我们提供专业的 SU
+        建模服务，拥有经验丰富的团队，能够为您打造高质量的三维模型。
+      </p>
+      <!-- 可添加更多关于 SU 建模的详细内容 -->
+    </main>
+    <script>
+      const header = document.getElementById("header");
+      let isHeaderVisible = true;
+      let lastX = null;
+      let lastY = null;
+      let hideHeaderTimer;
+      const normalHideDelay = 1000;
+      const topHideDelay = 3000;
+      const threshold = 20;
+
+      header.addEventListener("mouseleave", function () {
+        clearTimeout(hideHeaderTimer);
+        hideHeaderTimer = setTimeout(() => {
+          header.classList.add("hidden");
+          isHeaderVisible = false;
+        }, normalHideDelay);
+      });
+
+      document.addEventListener("mousemove", function (e) {
+        if (e.clientY < threshold) {
+          clearTimeout(hideHeaderTimer);
+          if (!isHeaderVisible) {
+            header.classList.remove("hidden");
+            isHeaderVisible = true;
+          }
+          hideHeaderTimer = setTimeout(() => {
+            header.classList.add("hidden");
+            isHeaderVisible = false;
+          }, topHideDelay);
+        } else {
+          clearTimeout(hideHeaderTimer);
+          if (isHeaderVisible) {
+            hideHeaderTimer = setTimeout(() => {
+              header.classList.add("hidden");
+              isHeaderVisible = false;
+            }, normalHideDelay);
+          }
+        }
+
+        if (lastX !== null && lastY !== null) {
+          const trail = document.createElement("div");
+          trail.classList.add("trail");
+          const angle = Math.atan2(e.clientY - lastY, e.clientX - lastX);
+          trail.style.left = lastX + "px";
+          trail.style.top = lastY + "px";
+          trail.style.transform = `rotate(${angle}rad)`;
+          const randomColor =
+            "#" + Math.floor(Math.random() * 16777215).toString(16);
+          trail.style.backgroundColor = randomColor;
+          document.body.appendChild(trail);
+
+          setTimeout(() => {
+            document.body.removeChild(trail);
+          }, 500);
+        }
+
+        lastX = e.clientX;
+        lastY = e.clientY;
+      });
+    </script>
+  </body>
+</html>
